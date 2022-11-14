@@ -2,7 +2,9 @@ var express = require('express'); //express handles routes
 var request = require('request'); // for managing request -> use axios latter
 var http = require('http'); 
 var app = express(); //starting express
-app.set('port', process.env.PORT || 3000); 
+app.set('port', process.env.PORT || 3000);
+const dotenv = require("dotenv")
+dotenv.config() 
 
 // URL formating
 app.use(express.urlencoded());
@@ -62,7 +64,7 @@ function sendHelp(id) {
   console.log("[server.js][sendHelp] options request", options)
 
   request(options, function(error, response, body) {
-    console.log("[server.js][sendHelp][request send] response", response)
+    // console.log("[server.js][sendHelp][request send] response", response)
     if (error) {
       console.log(error.message);
     }
