@@ -17,15 +17,18 @@ app.post('/',handleMessage);
 // Display message send on the server from messenger
 function handleMessage(req, res) {
   let messaging_events = req.body.entry[0].messaging;
-  console.log()
+  console.log("[server.js][handleMessage] ========= STARTING")
+  console.log("[server.js][handleMessage] messaging event", messaging_events)
   for (i = 0; i < messaging_events.length; i++) {
     let event = req.body.entry[0].messaging[i];
     let sender = event.sender.id;
     if (event.message && event.message.text) {
+      console.log("[server.js][handleMessage] text existing")
       text = event.message.text;
       sendHelp(sender);
     }
   }
+  console.log("[server.js][handleMessage]  ========= ENDED")
   res.end('received!');
 }
 
@@ -43,6 +46,7 @@ function verificationHandler(req, res) {
 // Try to send response
 var url = `https://graph.facebook.com/v15/me/messages?access_token=${process.env.PAGE_TOKEN}`
 function sendHelp(id) {
+  console.log("[server.js][sendHelp] ========= STARTING")
   var options = {
     uri: url,
     method: 'POST',
@@ -55,11 +59,15 @@ function sendHelp(id) {
       }
     }
   }
+  console.log("[server.js][sendHelp] options request", options)
+
   request(options, function(error, response, body) {
+    console.log("[server.js][sendHelp][request send] response", response)
     if (error) {
       console.log(error.message);
     }
   });
+  console.log("[server.js][sendHelp] ========= ENDED")
 };
 
 // Launch the server
