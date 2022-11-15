@@ -18,20 +18,27 @@ app.post('/',handleMessage);
 
 // Display message send on the server from messenger
 function handleMessage(req, res) {
-  let messaging_events = req.body.entry[0].messaging;
   console.log("[server.js][handleMessage] ========= STARTING")
-  console.log("[server.js][handleMessage] messaging event", messaging_events)
-  for (i = 0; i < messaging_events.length; i++) {
-    let event = req.body.entry[0].messaging[i];
-    let sender = event.sender.id;
-    if (event.message && event.message.text) {
-      console.log("[server.js][handleMessage] text existing")
-      text = event.message.text;
-      sendHelp(sender);
-    }
+  let body = req.body; // Parse the request body from the POST
+
+  // Check the webhook event is from a Page subscription (webhook event is setup on dev.fb.com/apps)
+  if (body.object === 'page') {
+    console.log("[server.js][handleMessage] page subscription")
+    // Iterate over each entry - there may be multiple if batched
+    body.entry.forEach(function(entry) {
+      // Get the webhook event. entry.messaging is an array, but 
+      // will only ever contain one event, so we get index 0
+      let webhook_event = entry.messaging[0];
+      console.log("[server.js][handleMessage] webhook_event", webhook_event);
+    });
+    // Return a '200 OK' response to all events
+    res.status(200).send('EVENT_RECEIVED');
+
+  } else {
+    console.log("[server.js][handleMessage] other subscription, not supported")
+    res.sendStatus(404); // Return a '404 Not Found' if event is not from a page subscription
   }
   console.log("[server.js][handleMessage]  ========= ENDED")
-  res.end('received!');
 }
 
 // Verification for checking if webhook exist
